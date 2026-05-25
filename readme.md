@@ -15,9 +15,9 @@ Proxmox inside a Docker container.
 
 ## Features ✨
 
- - KVM acceleration
- - Web-based viewer
- - Automatic download
+ - Fast virtual machines
+ - Isolated LXC containers
+ - Web-based management interface
 
 ## Usage  🐳
 
@@ -26,25 +26,20 @@ Proxmox inside a Docker container.
 ```yaml
 services:
   proxmox:
+    hostname: proxmox
     image: dockurr/proxmox
     container_name: proxmox
-    devices:
-      - /dev/kvm
-      - /dev/net/tun
-    cap_add:
-      - NET_ADMIN
     ports:
       - 8006:8006
-    volumes:
-      - ./proxmox:/storage
     restart: always
-    stop_grace_period: 2m
+    privileged: true
+    stop_grace_period: 1m
 ```
 
 ##### Via Docker CLI:
 
 ```bash
-docker run -it --rm --name proxmox -p 8006:8006 --device=/dev/kvm --device=/dev/net/tun --cap-add NET_ADMIN -v "${PWD:-.}/proxmox:/storage" --stop-timeout 120 docker.io/dockurr/proxmox
+docker run -it --rm --name proxmox --hostname proxmox -p 8006:8006 --privileged --stop-timeout 60 docker.io/dockurr/proxmox
 ```
 
 ##### Via Kubernetes:
@@ -62,6 +57,14 @@ kubectl apply -f https://raw.githubusercontent.com/dockur/proxmox/refs/heads/mas
 ### How do I use it?
 
   Very simple! These are the steps:
+  
+  - Start the container and connect to [port 8006](http://127.0.0.1:8006/) using your web browser.
+
+  - Login using the username `root` and default password `root`
+
+  - Change the login details to something more secure
+  
+  Enjoy your time with your brand new Proxmox installation, and don't forget to star this repo!
 
 ## Acknowledgements 🙏
 
