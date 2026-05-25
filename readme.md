@@ -49,6 +49,12 @@ docker run -it --rm --name proxmox --hostname proxmox -e "USERNAME=root" -e "PAS
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dockur/proxmox)
 
+## Screenshot 📸
+
+<div align="center">
+<a href="https://github.com/dockur/proxmox"><img src="https://raw.githubusercontent.com/dockur/proxmox/master/.github/screenshot.png" title="Screenshot" style="max-width:100%;" width="256" /></a>
+</div>
+
 ## FAQ 💬
 
 ### How do I use it?
