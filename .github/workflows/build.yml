@@ -1,7 +1,8 @@
 name: Build
-
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
 
 concurrency:
   group: build
@@ -29,7 +30,6 @@ jobs:
           latest_tag=$(gzip -dc "$VERSION" 2>/dev/null | awk '$1=="Package:"&&$2=="proxmox-ve"{f=1} f&&$1=="Version:"{print $2; exit}' || true )
           rm -f "$VERSION"
           echo "Found tag: \"${latest_tag}\""
-          latest_tag="9.1.2"
           latest_version="${latest_tag%-*}"
           major="${latest_version%%.*}"
           minor="${latest_version#*.}"
