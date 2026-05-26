@@ -120,13 +120,7 @@ echo "        bridge-ports $NET_DEV" >> "$file"
 echo "        bridge-stp off" >> "$file"
 echo "        bridge-fd 0" >> "$file"
 
-ifdown --all --allow auto
-ifdown --all --allow hotplug
-
 # Apply configuration
 cp "$file" /etc/network/interfaces
-
-ifup --all --allow auto
-ifup --all --allow hotplug
 
 exec /sbin/init 3
