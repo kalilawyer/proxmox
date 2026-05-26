@@ -83,7 +83,7 @@ docker run -it --rm --name proxmox --hostname pve --privileged -e "PASSWORD=root
     - ./storage:/var/lib/vz
   ```
 
-  Replace the example path `./storage` with the desired storage folder or named volume. All disks and images will be stored here.
+  Replace the example path `./storage` with the desired storage folder or named volume. All large files (like disks and images) will be stored here.
 
 ### How do I change the location of the settings files?
 
@@ -94,7 +94,7 @@ docker run -it --rm --name proxmox --hostname pve --privileged -e "PASSWORD=root
     - ./config:/etc/pve
   ```
 
-  Replace the example path `./config` with the desired storage folder or named volume. All your configuration files will go here.
+  Replace the example path `./config` with the desired storage folder or named volume. All small files (like your configuration files) will go here.
 
 ### How can I setup networking for the virtual machines?
 
