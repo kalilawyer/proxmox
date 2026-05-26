@@ -128,7 +128,7 @@ else
   subnet=$(echo "$inspect" | jq -r '.[0].IPAM.Config[0].Subnet')
   gateway=$(echo "$inspect" | jq -r '.[0].IPAM.Config[0].Gateway')
   
-  # Automaticly add all network interfaces
+  # Automatically add all network interfaces
   file="/etc/network/interfaces.new"
   
   echo "auto lo" > "$file"
