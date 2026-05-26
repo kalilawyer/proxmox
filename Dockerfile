@@ -14,8 +14,14 @@ RUN set -Eeuo pipefail && \
     apt-get update && \
     # Install prerequisites
     apt-get --no-install-recommends -y install \
+        jq \
         wget \
+        curl \
+        gnupg \
         ca-certificates && \
+    # Add Docker archive keyring
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/debian trixie stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
     # Add Proxmox archive keyring
     wget https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg \
       -O /usr/share/keyrings/proxmox-archive-keyring.gpg -q --timeout=10 && \
@@ -48,12 +54,17 @@ RUN set -Eeuo pipefail && \
     apt-get update && \
     apt-get full-upgrade -y && \
     apt-get --no-install-recommends install -y \
-      proxmox-ve \
-      postfix \
-      open-iscsi \
       nano \
+      procps \
+      chrony \
+      postfix \
+      proxmox-ve \
+      open-iscsi \
+      ethtool \
+      iproute2 \
+      net-tools \
       iputils-ping \
-      chrony && \
+      docker-ce-cli && \
     apt-get remove -y os-prober && \
     # Remove enterprise repo added by Proxmox packages — keep only no-subscription
     rm -f /etc/apt/sources.list.d/pve-enterprise.list \
