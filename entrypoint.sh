@@ -140,7 +140,6 @@ else
     echo "auto $i" >> "$file"
     echo "iface $i inet manual" >> "$file"
 
-  # shellcheck disable=SC2046
   done <<< $(ip -o link show | awk -F': ' '{print $2}' | grep -v lo | sed 's/@.*//')
   
   echo "" >> "$file"
@@ -162,7 +161,6 @@ else
   
     fi
 
-  # shellcheck disable=SC2046 
   done <<< $(ip -o -4 addr show)
   
   [ -z "$bridge" ] && error "Could not find interface of bridge?" && exit 35
