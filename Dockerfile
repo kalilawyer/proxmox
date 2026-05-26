@@ -51,6 +51,8 @@ RUN set -Eeuo pipefail && \
       proxmox-ve \
       postfix \
       open-iscsi \
+      nano \
+      iputils-ping \
       chrony && \
     apt-get remove -y os-prober && \
     # Remove enterprise repo added by Proxmox packages — keep only no-subscription
