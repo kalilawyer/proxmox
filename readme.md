@@ -33,6 +33,8 @@ services:
       PASSWORD: "root"
     ports:
       - 8006:8006
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     privileged: true
     stop_grace_period: 1m
@@ -41,7 +43,7 @@ services:
 ##### Via Docker CLI:
 
 ```bash
-docker run -it --rm --name proxmox --hostname pve -e "PASSWORD=root" -p 8006:8006 --privileged --stop-timeout 60 docker.io/dockurr/proxmox
+docker run -it --rm --name proxmox --hostname pve --privileged -e "PASSWORD=root" -p 8006:8006 -v "/var/run/docker.sock:/var/run/docker.sock" --stop-timeout 60 docker.io/dockurr/proxmox
 ```
 
 ##### Via Github Codespaces:
@@ -72,15 +74,15 @@ docker run -it --rm --name proxmox --hostname pve -e "PASSWORD=root" -p 8006:800
 
 ### How can I setup networking for the virtual machines?
 
-  - In the Proxmox web-interface, go to `System` -> `Network`.
+  - In the Proxmox web-interface, go to `Datacenter` -> `pve` --> `System` -> `Network`.
   
-  - There is a `Linux Bridge` called `docker0`, look at its `IPv4/CIDR` field and remember its subnet.
+  - There is a `Linux Bridge` called `docker0`, look at the `IPv4/CIDR` column and remember its subnet, for example `172.20.0.0/16`
 
-  - Attach the `docker0` bridge to your virtual machine, start that machine and view its screen.
+  - Attach the `docker0` bridge network to your virtual machine, start that machine and view its screen.
  
   - Configure the OS for a static IP instead of DHCP, and pick a fixed address inside the subnet of the `docker0` bridge.
-   
-    Preferably one starting from a value of `.100`, for example `172.0.11.100`.
+
+    Always start from a value of `.100`, so for example pick `172.0.20.100` for the first machine if the subnet was `172.20.0.0/16`.
 
   - The virtual machine should now be connected to the internet!
 
