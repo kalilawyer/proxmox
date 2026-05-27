@@ -107,9 +107,6 @@ RUN set -Eeuo pipefail && \
     echo "root:root" | chpasswd && \
     # Store version number
     echo "$VERSION_ARG" > /run/version && \
-    # Backup configuration
-    mkdir -p /config && \
-    cp -a -R /etc/. /config && \
     # Cleanup files
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -120,7 +117,6 @@ ENV PASSWORD="root"
 EXPOSE 8006
 STOPSIGNAL SIGRTMIN+3
 
-VOLUME /etc
 VOLUME /var/lib/vz
 
 HEALTHCHECK --interval=60s --timeout=10s --start-period=60s --retries=3 \
