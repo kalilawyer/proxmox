@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM --platform=linux/amd64 debian:13-slim AS base-amd64
-FROM --platform=linux/arm64 debian:12-slim AS base-arm64
+FROM --platform=linux/arm64 debian:13-slim AS base-arm64
 
 FROM base-${TARGETARCH} AS base
 
@@ -44,7 +44,7 @@ elif [ "${TARGETARCH}" = "arm64" ]; then
   KEY_URL="https://mirrors.lierfang.com/pxcloud/lierfang.gpg"
   KEY_PATH="/etc/apt/trusted.gpg.d/lierfang.gpg"
   URI="https://mirrors.lierfang.com/pxcloud/pxvirt"
-  SUITE="bookworm"
+  SUITE="trixie"
   COMPONENT="main"
 fi
 
@@ -86,12 +86,6 @@ printf 'Package: ifupdown2\nPin: origin download.proxmox.com\nPin-Priority: 1001
 # Update system and install Proxmox VE
 apt-get update
 apt-get full-upgrade -y
-
-if [ "${TARGETARCH}" = "arm64" ]; then
-  apt policy python3-virt-firmware
-  apt -o Debug::pkgProblemResolver=yes install qemu-server
-fi
-
 apt-get install -y --no-install-recommends \
   nano \
   wget \
