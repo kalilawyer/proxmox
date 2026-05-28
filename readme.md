@@ -11,7 +11,9 @@
 
 </div></h1>
 
-Proxmox VE inside a Docker container. Learn, test, break, and repeat.
+Proxmox VE inside a Docker container.
+
+Learn, test, break, and repeat.
 
 ## Features ✨
 
