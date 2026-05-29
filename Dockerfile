@@ -179,7 +179,7 @@ rm -rf \
 echo "root:root" | chpasswd
 
 # Store version number
-echo "$VERSION_ARG" > /usr/local/bin/version
+echo "$VERSION_ARG" > /etc/version
 
 # Cleanup files
 rm /usr/local/sbin/systemctl
