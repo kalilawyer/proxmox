@@ -25,6 +25,7 @@ configureDNS() {
   local base="${ip%.*}"
   local ip_last="${ip##*.}"
   local gw_last="${gateway##*.}"
+  local file="/etc/dnsmasq.d/$fa.conf"
 
   # Determine the sorted positions
   local low high
@@ -41,28 +42,28 @@ configureDNS() {
   (( high < 254 )) && ranges+="dhcp-range=set:${fa},${base}.$((high + 1)),${base}.254"$'\n'
   ranges="${ranges%$'\n'}"  # strip trailing newline
 
-  cat >"/etc/dnsmasq.d/$fa.conf" <<-EOF
+  sed 's/^    //' > "$file" <<EOF
 
-        # Listen only on bridge
-        interface=$fa
-        bind-interfaces
-        except-interface=lo
+    # Listen only on bridge
+    interface=$fa
+    bind-interfaces
+    except-interface=lo
 
-        # IPv4 DHCP ranges
-        $ranges
+    # IPv4 DHCP ranges
+    $ranges
 
-        # Set gateway address
-        dhcp-option=option:netmask,$mask
-        dhcp-option=option:router,$gateway
-        dhcp-option=option:dns-server,$gateway
-        address=/host.lan/$gateway
+    # Set gateway address
+    dhcp-option=option:netmask,$mask
+    dhcp-option=option:router,$gateway
+    dhcp-option=option:dns-server,$gateway
+    address=/host.lan/$gateway
 
-        # DHCP settings
-        dhcp-authoritative
+    # DHCP settings
+    dhcp-authoritative
 
-        # Windows compatibility
-        dhcp-option=252,"\n"
-        dhcp-option=vendor:MSFT,2,1i
+    # Windows compatibility
+    dhcp-option=252,"\n"
+    dhcp-option=vendor:MSFT,2,1i
 EOF
 
   return 0
@@ -77,7 +78,7 @@ setInterfaces() {
   # Add all available network interfaces
   local file="/etc/network/interfaces.new"
 
-  cat > "$file" <<-EOF
+  sed 's/^    //' > "$file" <<EOF
     auto lo
     iface lo inet loopback
 EOF
@@ -86,16 +87,16 @@ EOF
 
     [[ "${i,,}" == "${fa,,}" ]] && continue
 
-    cat >> "$file" <<-EOF
+    sed 's/^        //' >> "$file" <<EOF
 
-      auto $i
-      iface $i inet manual
+        auto $i
+        iface $i inet manual
 EOF
 
   done < <(ip -o link show | awk -F': ' '{print $2}' | grep -v lo | sed 's/@.*//')
 
   # Configure bridge
-  cat >> "$file" <<-EOF
+  sed 's/^    //' >> "$file" <<EOF
 
     auto $fa
     iface $fa inet static
@@ -103,6 +104,8 @@ EOF
         bridge-ports $tap
         bridge-stp off
         bridge-fd 0
+
+    source /etc/network/interfaces.d/*
 EOF
 
   return 0
@@ -248,6 +251,15 @@ configureNAT() {
   return 0
 }
 
+blockLicense() {
+
+  # Block connection attempts to license server
+  sed -i -E '/^[[:space:]]*[^#]*[[:space:]]shop\.maurer-it\.com([[:space:]]|$)/d' /etc/hosts 2>/dev/null || true
+  printf '%s\n' '127.0.0.1 shop.maurer-it.com' '::1 shop.maurer-it.com' >> /etc/hosts 2>/dev/null || true
+
+  return 0
+}
+
 closeBridge() {
 
   ip link set "$TAP" down promisc off &> /dev/null || true
@@ -331,6 +343,8 @@ getInfo() {
 # ######################################
 #  Configure Network
 # ######################################
+
+blockLicense
 
 [[ "$NETWORK" == [Nn]* ]] && return 0
 

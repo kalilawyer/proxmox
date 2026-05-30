@@ -66,8 +66,7 @@ dpkg-divert --local --rename --add /usr/sbin/update-initramfs
 printf '#!/bin/sh\nexit 0\n' > /usr/sbin/update-initramfs
 chmod +x /usr/sbin/update-initramfs
 dpkg-divert --local --rename --add /usr/sbin/ifreload
-printf '#!/bin/sh\n[ "$1" = "-V" ] && printf "%%s\n" "info: executing /usr/bin/dpkg -l ifupdown2" \
-"ifupdown2:3.3.0-1+pmx12"\nexit 0\n' > /usr/sbin/ifreload
+printf '#!/bin/sh\n[ "$1" = "-V" ] && printf "%%s\n" "ifupdown2:3.3.0-1+pmx12"\nexit 0\n' > /usr/sbin/ifreload
 chmod +x /usr/sbin/ifreload
 printf '#!/bin/sh\nexit 0\n' > /usr/local/sbin/systemctl
 chmod +x /usr/local/sbin/systemctl
@@ -135,21 +134,18 @@ apt-get remove -y sudo os-prober
 apt-get autoremove -y
 apt-get clean
 
-# Fix ifupdown2-pre.service for container (no udev)
-mkdir -p /etc/systemd/system/ifupdown2-pre.service.d
-cat > /etc/systemd/system/ifupdown2-pre.service.d/override.conf <<SRV
-[Service]
-ExecStart=
-ExecStart=/bin/true
-SRV
+# Mask unneeded services
+ln -sf /dev/null /etc/systemd/system/watchdog-mux.service
+ln -sf /dev/null /etc/systemd/system/ifupdown2-pre.service
+ln -sf /dev/null /etc/systemd/system/systemd-networkd-wait-online.service
 
-# Fix lxcfs.service to suppress error during shutdown
-mkdir -p /etc/systemd/system/lxcfs.service.d
-cat > /etc/systemd/system/lxcfs.service.d/override.conf <<CFS
-[Service]
-ExecStop=
-ExecStop=/bin/true
-CFS
+# Disable keyboard request target
+cat >/etc/systemd/system/kbrequest.target <<KBR
+[Unit]
+Description=Keyboard Request Target
+
+[Target]
+KBR
 
 # Add keyring for pveam
 gpg --keyserver keyserver.ubuntu.com --recv-keys \
@@ -218,11 +214,6 @@ echo "$VERSION_ARG" > /etc/version
 # Remove stub
 rm /usr/local/sbin/systemctl
 
-# Mask unneeded services
-systemctl mask watchdog-mux.service
-systemctl mask run-docker.sock.mount
-systemctl mask systemd-networkd-wait-online.service
-
 # Cleanup files
 rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
@@ -243,4 +234,4 @@ HEALTHCHECK --interval=60s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -kLfSs http://localhost:8006 >/dev/null || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/sbin/init", "--log-target=console", "--log-level=info"]
+CMD ["/sbin/init", "--log-target=console", "--log-level=notice"]
