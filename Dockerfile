@@ -23,6 +23,7 @@ apt-get update
 # Install prerequisites
 apt-get update
 apt-get install -y --no-install-recommends \
+  bc \
   jq \
   curl \
   dbus \
@@ -32,6 +33,7 @@ apt-get install -y --no-install-recommends \
   htop \
   less \
   cpio \
+  gosu \
   iotop \
   gnupg \
   procps \
@@ -45,11 +47,15 @@ apt-get install -y --no-install-recommends \
   iptables \
   iproute2 \
   ifupdown2 \
+  jfsutils \
+  xfsprogs \
+  e2fsprogs \
   net-tools \
   nfs-common \
   cifs-utils \
   traceroute \
   open-iscsi \
+  btrfs-progs \
   bridge-utils \
   iputils-ping \
   netcat-openbsd \
